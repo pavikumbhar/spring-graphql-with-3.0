@@ -1,0 +1,74 @@
+scalar Object
+scalar LocalDateTime
+
+type Query {
+    operatingSystems(page:Int = 0,size:Int = 10,filters: [SearchFilter],sorting: Sorting ):[OperatingSystem]
+    operatingSystemsWithPagination(page:Int = 0,size:Int = 10,filters: [SearchFilter],sorting: Sorting ):[OperatingSystem]
+    operatingSystemsWithPage(page:Int = 0,size:Int = 10,filters: [SearchFilter],sorting: Sorting ):OperatingSystemPagination
+}
+
+type Mutation {
+    createOperatingSystem(operatingSystem:OperatingSystemInput): OperatingSystem
+    updateOperatingSystem(operatingSystem:OperatingSystemInput): OperatingSystem
+}
+
+
+input OperatingSystemInput{
+    id: Int
+    name: String
+    version :String
+    kernel: String
+    usages: String
+    releaseDate :LocalDateTime
+    active:Boolean
+}
+
+type OperatingSystem{
+    id: Int
+    name: String
+    version :String
+    kernel: String
+    usages: String
+    releaseDate :LocalDateTime
+    active:Boolean
+}
+
+input SearchFilter{
+    field :String,
+    value :String,
+    values: [String],
+    operator :QueryOperator,
+    logicalOperator:LogicalOperator = AND
+}
+
+enum SortOrder {
+    ASC,
+    DESC
+}
+input Sorting{
+    field: String,
+    order: SortOrder
+}
+enum QueryOperator{
+    GREATER_THAN,
+    LESS_THAN,
+    EQUALS,
+    LIKE,
+    NOT_EQ,
+    IN,
+}
+
+
+enum LogicalOperator{
+    AND,
+    OR
+}
+
+type OperatingSystemPagination {
+    content: [OperatingSystem]!
+    pageNumber: Int
+    totalPages: Int
+    totalElements: Int
+    hasNext: Boolean
+    hasPrevious: Boolean
+}
