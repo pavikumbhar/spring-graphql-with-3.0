@@ -1,6 +1,5 @@
 package com.pavikumbhar.controller;
 
-import com.google.gson.Gson;
 import com.pavikumbhar.common.criteria.QueryResolver;
 import com.pavikumbhar.common.criteria.SearchFilter;
 import com.pavikumbhar.common.criteria.Sorting;
@@ -8,16 +7,18 @@ import com.pavikumbhar.dto.GenericPaginationDTO;
 import com.pavikumbhar.dto.OperatingSystemDTO;
 import com.pavikumbhar.entity.OperatingSystem;
 import com.pavikumbhar.repository.OperatingSystemRepository;
+import com.pavikumbhar.util.AppUtils;
+import com.pavikumbhar.util.JsonUtils;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.SelectedField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -36,7 +37,6 @@ public class GraphDataController {
 
     private final QueryResolver queryResolver;
     private final OperatingSystemRepository operatingSystemRepository;
-    private final Gson gson;
 
     @QueryMapping
     public Flux<OperatingSystem> operatingSystems(@Argument int page,
@@ -44,7 +44,7 @@ public class GraphDataController {
                                                   @Argument List<SearchFilter> filters,
                                                   @Argument Sorting sorting,
                                                   DataFetchingEnvironment environment) {
-        log.info("operatingSystems() : filters -> {}", gson.toJson(filters));
+        log.info("operatingSystems() : filters -> {}", JsonUtils.toJson(filters));
         Set<String> requestedFields = environment.getSelectionSet().getFields()
                 .stream().map(SelectedField::getName).collect(Collectors.toSet());
         log.info("operatingSystems() : requestedFields -> {} ", requestedFields);
@@ -53,15 +53,20 @@ public class GraphDataController {
     }
 
     @MutationMapping
-    public Mono<OperatingSystemDTO> createOperatingSystem(@Argument OperatingSystemDTO operatingSystem) {
-        log.info("createOperatingSystem : operatingSystems ->  {}", operatingSystem);
-        return Mono.just(operatingSystem);
+    public Mono<OperatingSystemDTO> createOperatingSystem(@Argument("operatingSystem") @Validated OperatingSystemDTO operatingSystemDto) {
+        log.info("createOperatingSystem : operatingSystemDto ->  {}", operatingSystemDto);
+        OperatingSystem operatingSystem = new OperatingSystem();
+        AppUtils.copyProperties(operatingSystemDto, operatingSystem, OperatingSystemDTO.Fields.id);
+        log.error("operatingSystem() : operatingSystem -> {}",operatingSystem);
+        OperatingSystem savedOperatingSystem = queryResolver.save(operatingSystem,OperatingSystem.class);
+        AppUtils.copyNonNullProperties(savedOperatingSystem, operatingSystemDto);
+        return Mono.just(operatingSystemDto);
     }
 
     @MutationMapping
-    public Mono<OperatingSystem> updateOperatingSystem(@Argument OperatingSystem operatingSystem) {
-        log.info("updateOperatingSystem : operatingSystems -> {}", operatingSystem);
-        return Mono.just(operatingSystem);
+    public Mono<OperatingSystemDTO> updateOperatingSystem(@Argument("operatingSystem") OperatingSystemDTO operatingSystemDto) {
+        log.info("updateOperatingSystem : operatingSystemDto -> {}", operatingSystemDto);
+        return Mono.just(operatingSystemDto);
     }
 
     @QueryMapping
@@ -70,7 +75,7 @@ public class GraphDataController {
                                                                 @Argument List<SearchFilter> filters,
                                                                 @Argument Sorting sorting,
                                                                 DataFetchingEnvironment environment) {
-        log.info("operatingSystemsWithPagination() : filters -> {}", gson.toJson(filters));
+        log.info("operatingSystemsWithPagination() : filters -> {}", JsonUtils.toJson(filters));
         Set<String> requestedFields = environment.getSelectionSet()
                 .getFields()
                 .stream().map(SelectedField::getName)
@@ -86,7 +91,7 @@ public class GraphDataController {
                                                                                 @Argument List<SearchFilter> filters,
                                                                                 @Argument Sorting sorting,
                                                                                 DataFetchingEnvironment environment) {
-        log.info("operatingSystemsWithPage() : filters -> {}", gson.toJson(filters));
+        log.info("operatingSystemsWithPage() : filters -> {}", JsonUtils.toJson(filters));
         Set<String> requestedFields = getRequestedFields(environment);
         log.info("operatingSystemsWithPage() : requestedFields -> {} ", requestedFields);
         Page<OperatingSystem> operatingSystemPage = queryResolver.findAllWithPage(page, size, filters, requestedFields, sorting, OperatingSystem.class);
@@ -126,15 +131,5 @@ public class GraphDataController {
                 .build();
     }
 
-    public OperatingSystemDTO copyProperties(OperatingSystem source, OperatingSystemDTO target, String... ignoreProperties) {
-        BeanUtils.copyProperties(source, target, ignoreProperties);
-        return target;
-    }
-
-    public List<OperatingSystemDTO> toOperatingSystemDto(List<OperatingSystem> operatingSystemList) {
-        return operatingSystemList.stream().map(operatingSystem -> copyProperties(operatingSystem, new OperatingSystemDTO()))
-                .toList();
-
-    }
 
 }

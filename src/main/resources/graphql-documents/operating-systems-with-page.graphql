@@ -1,0 +1,19 @@
+
+query OperatingSystemsWithPage($page:Int,$size:Int) {
+    operatingSystemsWithPage(page: $page, size: $size) {
+        pageNumber
+        totalPages
+        totalElements
+        hasNext
+        hasPrevious
+        content {
+            id
+            name
+            version
+            kernel
+            usages
+            releaseDate
+            active
+        }
+    }
+}

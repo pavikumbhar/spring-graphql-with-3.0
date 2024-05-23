@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @FieldNameConstants
 public class GenericPaginationDTO<T> {
-    private List<T> content;
+    @Builder.Default
+    private List<T> content = new ArrayList<>();
     private int pageNumber;
     private int totalPages;
     private long totalElements;

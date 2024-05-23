@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @ConfigurationProperties(prefix = "database-entity")
 public class EntityMetadataConfig {
 
-    Map<DatabaseEntity, EntityMetadata> entityMetadataMap;
+    private Map<DatabaseEntity, EntityMetadata> entityMetadataMap;
     private String metadata;
 
     private void loadMetadataMap() {

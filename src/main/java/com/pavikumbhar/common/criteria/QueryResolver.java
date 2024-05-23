@@ -93,5 +93,15 @@ public class QueryResolver {
 
     }
 
+    public <T, I>  T save(T object, Class<T> clazz) {
+        GenericRepository<T, I> genericRepository = this.getRepository(clazz);
+       return  genericRepository.save(object);
+    }
+
+    public <T, I>  void delete(T object, Class<T> clazz) {
+        GenericRepository<T, I> genericRepository = this.getRepository(clazz);
+        genericRepository.delete(object);
+      }
+
 
 }
