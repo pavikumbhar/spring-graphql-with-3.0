@@ -5,6 +5,7 @@ type Query {
     operatingSystems(page:Int = 0,size:Int = 10,filters: [SearchFilter],sorting: Sorting ):[OperatingSystem]
     operatingSystemsWithPagination(page:Int = 0,size:Int = 10,filters: [SearchFilter],sorting: Sorting ):[OperatingSystem]
     operatingSystemsWithPage(page:Int = 0,size:Int = 10,filters: [SearchFilter],sorting: Sorting ):OperatingSystemPagination
+    operatingSystemsWithCursor(limit: Int, cursor: String): PaginatedOperatingSystem
 }
 
 type Mutation {
@@ -72,3 +73,10 @@ type OperatingSystemPagination {
     hasNext: Boolean
     hasPrevious: Boolean
 }
+
+type PaginatedOperatingSystem {
+    items: [OperatingSystem]
+    nextCursor: String
+    totalElements: Int
+}
+

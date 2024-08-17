@@ -1,5 +1,6 @@
 package com.pavikumbhar.controller;
 
+import com.pavikumbhar.PaginatedGraphQlService;
 import com.pavikumbhar.client.GraphQlClient;
 import com.pavikumbhar.dto.GenericPaginationDTO;
 import com.pavikumbhar.dto.QueryResult;
@@ -12,6 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ import java.util.Map;
 public class AppRestController {
 
     private final GraphQlClient graphQlClient;
+    private final PaginatedGraphQlService paginatedGraphQlService;
 
     @GetMapping("load")
     public Mono<QueryResultList<OperatingSystem>> loadData() {
@@ -104,6 +107,14 @@ public class AppRestController {
         return graphQlClient.getGraphQLQueryResultByDocumentName("operating-systems-with-page",
                 "operatingSystemsWithPage", variables, new ParameterizedTypeReference<GenericPaginationDTO<OperatingSystem>>() {
                 });
+
+
+    }
+
+    @GetMapping("with-cursor")
+    public Flux<OperatingSystem> withCursor() {
+
+        return paginatedGraphQlService.operatingSystemsWithCursor();
 
 
     }

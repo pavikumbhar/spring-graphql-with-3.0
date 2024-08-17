@@ -1,5 +1,7 @@
 package com.pavikumbhar.controller;
 
+import com.pavikumbhar.OperatingSystemService;
+import com.pavikumbhar.PaginatedItems;
 import com.pavikumbhar.common.criteria.QueryResolver;
 import com.pavikumbhar.common.criteria.SearchFilter;
 import com.pavikumbhar.common.criteria.Sorting;
@@ -37,6 +39,7 @@ public class GraphDataController {
 
     private final QueryResolver queryResolver;
     private final OperatingSystemRepository operatingSystemRepository;
+    private final OperatingSystemService operatingSystemService;
 
     @QueryMapping
     public Flux<OperatingSystem> operatingSystems(@Argument int page,
@@ -129,6 +132,14 @@ public class GraphDataController {
                 .hasNext(page.hasNext())
                 .hasPrevious(page.hasPrevious())
                 .build();
+    }
+
+    @QueryMapping
+    public Mono<PaginatedItems> operatingSystemsWithCursor(@Argument int limit,
+                                                           @Argument String cursor,
+                                                           DataFetchingEnvironment environment) {
+        PaginatedItems operatingSystems = operatingSystemService.getOperatingSystems(limit, cursor);
+        return Mono.just(operatingSystems);
     }
 
 

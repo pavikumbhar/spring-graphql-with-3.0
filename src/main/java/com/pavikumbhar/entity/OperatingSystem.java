@@ -1,21 +1,21 @@
 package com.pavikumbhar.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Data
+//@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "operatingSystem", schema = "operatingSystem")
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
 public class OperatingSystem implements Serializable {
 
     @Serial
