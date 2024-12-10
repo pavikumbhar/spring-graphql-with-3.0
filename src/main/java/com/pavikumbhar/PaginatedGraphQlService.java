@@ -43,14 +43,14 @@ public class PaginatedGraphQlService {
                     // Check for errors
                     if (response.getErrors() != null && !response.getErrors().isEmpty()) {
                         // Log the error and proceed to the next page
-                        log.error("Iteration " + iteration[0] + " - Error received: " + response.getErrors());
+                        log.error("Iteration {} - Error received: {}", iteration[0], response.getErrors());
                         // If errors are present, data is usually null or incomplete
                         return Flux.empty(); // Skip to the next page or handle accordingly
                     }
 
                     // Check if data is null
                     if (response.getData() == null) {
-                        log.error("Iteration " + iteration[0] + " - Data is null due to an error or other issue.");
+                        log.error("Iteration {} - Data is null due to an error or other issue.", iteration[0]);
                         // Continue to the next page if available
                         return Flux.empty();  // Or you could return a Mono with default data
                     }
@@ -75,7 +75,7 @@ public class PaginatedGraphQlService {
                 .flatMap(response -> {
                     // If errors are present, data is usually null or incomplete
                     if (response.getErrors() != null && !response.getErrors().isEmpty()) {
-                        log.error("####Iteration " + iteration[0] + " - Error received: " + response.getErrors());
+                        log.error("####Iteration {} - Error received: {}", iteration[0], response.getErrors());
                         // Handle error, but continue processing any valid data
                         return Mono.empty(); // Or you can handle it differently based on your requirements
                     }
@@ -135,7 +135,7 @@ public class PaginatedGraphQlService {
     }
 
     private Mono<? extends OperatingSystem> handleError(Throwable throwable) {
-        log.error("Error occurred: " + throwable.getMessage());
+        log.error("Error occurred: {}", throwable.getMessage());
         return Mono.empty(); // Fallback to an empty response or alternative logic
     }
 }
