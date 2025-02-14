@@ -9,18 +9,27 @@ import org.springframework.graphql.client.ClientGraphQlResponse;
 import org.springframework.graphql.client.ClientResponseField;
 import org.springframework.graphql.client.HttpGraphQlClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.util.Map;
 
+/**
+ * @author pavikumbhar
+ */
 @Slf4j
 public class BaseGraphqlClient {
     private final HttpGraphQlClient httpGraphQlClient;
 
     private final String url;
+    private final long maxAttempts;
+    private final Duration retryDelay;
 
-    protected BaseGraphqlClient(HttpGraphQlClient httpGraphQlClient, String url) {
+    protected BaseGraphqlClient(HttpGraphQlClient httpGraphQlClient, String url, long maxAttempts, Duration retryDelay) {
         this.httpGraphQlClient = httpGraphQlClient;
         this.url = url;
+        this.maxAttempts = maxAttempts;
+        this.retryDelay = retryDelay;
     }
 
     protected Mono<HttpGraphQlClient> getHttpGraphQlClient(Map<String, String> headers) {
@@ -36,9 +45,9 @@ public class BaseGraphqlClient {
         return getHttpGraphQlClient(headers)
                 .flatMap(client -> {
                     Mono<ClientGraphQlResponse> clientGraphQlResponse = client
-                                                            .documentName(documentName)
-                                                            .variables(variables)
-                                                            .execute();
+                            .documentName(documentName)
+                            .variables(variables)
+                            .execute();
 
                     return clientGraphQlResponse.map(graphQlResponse -> {
                         if (!graphQlResponse.isValid()) {
@@ -52,7 +61,8 @@ public class BaseGraphqlClient {
                         }
                     });
 
-                });
+                })
+                .retryWhen(retry("executeQueryByDocumentName", maxAttempts, retryDelay));
     }
 
     protected <T> Mono<QueryResultList<T>> executeQueryListByDocumentName(Map<String, String> headers, String documentName,
@@ -77,7 +87,16 @@ public class BaseGraphqlClient {
                         }
                     });
 
-                });
+                })
+                .retryWhen(retry("executeQueryListByDocumentName", maxAttempts, retryDelay));
+    }
+
+
+    private Retry retry(String message, long maxAttempts, Duration retryDelay) {
+        return Retry.backoff(maxAttempts, retryDelay)
+                .doBeforeRetry(retrySignal -> log.info("Retrying {} attempt [{}]", message, retrySignal.totalRetries() + 1))
+                .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
+                        retrySignal.failure());
     }
 
 

@@ -1,6 +1,7 @@
 package com.pavikumbhar.controller;
 
 import com.pavikumbhar.PaginatedGraphQlService;
+import com.pavikumbhar.client.AppGraphQlClient;
 import com.pavikumbhar.client.GraphQlClient;
 import com.pavikumbhar.dto.GenericPaginationDTO;
 import com.pavikumbhar.dto.QueryResult;
@@ -27,6 +28,7 @@ public class AppRestController {
 
     private final GraphQlClient graphQlClient;
     private final PaginatedGraphQlService paginatedGraphQlService;
+    private final AppGraphQlClient appGraphQlClient;
 
     @GetMapping("load")
     public Mono<QueryResultList<OperatingSystem>> loadData() {
@@ -44,7 +46,7 @@ public class AppRestController {
                         active
                     }
                 }
-                  """;
+                """;
         Mono<QueryResultList<OperatingSystem>> operatingSystems = graphQlClient.getGraphQLQueryResultList(document, "operatingSystems", Map.of(), OperatingSystem.class);
         log.info("data loading .....................!!");
         return operatingSystems;
@@ -87,14 +89,13 @@ public class AppRestController {
                         active
                     }
                 }
-                 """;
+                """;
 
         return graphQlClient.getGraphQLQueryResult(document, "createOperatingSystem", variables, new ParameterizedTypeReference<OperatingSystem>() {
         });
 
 
     }
-
 
 
     @GetMapping("get-page-data")
@@ -104,9 +105,13 @@ public class AppRestController {
         variables.put("page", page);
         variables.put("size", size);
 
-        return graphQlClient.getGraphQLQueryResultByDocumentName("operating-systems-with-page",
+       /* return graphQlClient.getGraphQLQueryResultByDocumentName("operating-systems-with-page",
                 "operatingSystemsWithPage", variables, new ParameterizedTypeReference<GenericPaginationDTO<OperatingSystem>>() {
-                });
+                });*/
+
+        return appGraphQlClient.executeQueryByDocumentName(Map.of(), "operating-systems-with-page", variables,
+                "operatingSystemsWithPage", new ParameterizedTypeReference<GenericPaginationDTO<OperatingSystem>>() {
+        });
 
 
     }
