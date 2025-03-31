@@ -1,6 +1,7 @@
-package com.pavikumbhar;
+package com.pavikumbhar.service;
 
-import com.pavikumbhar.client.GraphQlClient;
+import com.pavikumbhar.dto.PaginatedItems;
+import com.pavikumbhar.client.AppGraphQlClient;
 import com.pavikumbhar.dto.QueryResult;
 import com.pavikumbhar.entity.OperatingSystem;
 import com.pavikumbhar.util.JsonUtils;
@@ -26,7 +27,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PaginatedGraphQlService {
 
-    private final GraphQlClient graphQlClient;
+    private final AppGraphQlClient graphQlClient;
 
     private static final int API_RATE_LIMIT = 100; // API allows 100 requests per minute
     private static final int TIME_PER_REQUEST_MS = 200; // 200 milliseconds per request
@@ -103,6 +104,7 @@ public class PaginatedGraphQlService {
         variables.put("limit", limit);
         variables.put("nextCursor", nextCursor);
         // language=Graphql
+        /*
         String document = """
                 query operatingSystemsWithCursor($limit:Int,$nextCursor:String){
                    operatingSystemsWithCursor(limit: $limit, cursor: $nextCursor) {
@@ -114,9 +116,9 @@ public class PaginatedGraphQlService {
                        totalElements
                    }
                 }
-                """;
+                """;  */
 
-        return graphQlClient.getGraphQLQueryResult(document, "operatingSystemsWithCursor", variables,
+        return graphQlClient.executeQueryByDocumentName(Map.of(),"operatingSystemsWithCursor", variables ,"operatingSystemsWithCursor",
                 new ParameterizedTypeReference<PaginatedItems>() {
                 });
     }

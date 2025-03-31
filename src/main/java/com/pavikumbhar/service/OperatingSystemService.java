@@ -1,5 +1,6 @@
-package com.pavikumbhar;
+package com.pavikumbhar.service;
 
+import com.pavikumbhar.dto.PaginatedItems;
 import com.pavikumbhar.entity.OperatingSystem;
 import com.pavikumbhar.repository.OperatingSystemRepository;
 import lombok.RequiredArgsConstructor;

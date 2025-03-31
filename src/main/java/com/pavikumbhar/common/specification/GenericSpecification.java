@@ -22,6 +22,7 @@ public class GenericSpecification<T> {
             List<Selection<?>> selections = requestedFields.stream()
                     .map(root::get)
                     .collect(toList());
+            assert query != null;
             query.multiselect(selections);
             return criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 
@@ -32,7 +33,7 @@ public class GenericSpecification<T> {
         if (CollectionUtils.isEmpty(filters)) {
             return null;
         }
-        Specification<T> specification = where(createSpecification(filters.remove(0)));
+        Specification<T> specification = where(createSpecification(filters.removeFirst()));
         for (SearchFilter input : filters) {
             specification = specification.and(createSpecification(input));
         }
@@ -46,7 +47,7 @@ public class GenericSpecification<T> {
         List<Specification<T>> specifications = filters.stream()
                 .map(e -> createSpecification(e, requestedFields))
                 .toList();
-        Specification<T> combinedSpecification = specifications.get(0);
+        Specification<T> combinedSpecification = specifications.getFirst();
 
         for (int i = 1; i < specifications.size(); i++) {
             SearchFilter currentFilter = filters.get(i - 1);

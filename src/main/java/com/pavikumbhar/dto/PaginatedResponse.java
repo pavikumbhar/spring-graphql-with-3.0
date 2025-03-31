@@ -1,4 +1,4 @@
-package com.pavikumbhar;
+package com.pavikumbhar.dto;
 
 import graphql.GraphQLError;
 import lombok.Data;

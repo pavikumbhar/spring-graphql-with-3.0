@@ -1,6 +1,6 @@
 package com.pavikumbhar.controller;
 
-import com.pavikumbhar.PaginatedGraphQlService;
+import com.pavikumbhar.service.PaginatedGraphQlService;
 import com.pavikumbhar.client.AppGraphQlClient;
 import com.pavikumbhar.client.GraphQlClient;
 import com.pavikumbhar.dto.GenericPaginationDTO;

@@ -1,7 +1,7 @@
 package com.pavikumbhar.controller;
 
-import com.pavikumbhar.OperatingSystemService;
-import com.pavikumbhar.PaginatedItems;
+import com.pavikumbhar.service.OperatingSystemService;
+import com.pavikumbhar.dto.PaginatedItems;
 import com.pavikumbhar.common.criteria.QueryResolver;
 import com.pavikumbhar.common.criteria.SearchFilter;
 import com.pavikumbhar.common.criteria.Sorting;
@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @Author pavikumbhar
+ * @author pavikumbhar
  */
 @Slf4j
 @Controller

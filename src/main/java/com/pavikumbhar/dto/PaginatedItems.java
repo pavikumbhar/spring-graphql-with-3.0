@@ -1,4 +1,4 @@
-package com.pavikumbhar;
+package com.pavikumbhar.dto;
 
 import com.pavikumbhar.entity.OperatingSystem;
 import lombok.AllArgsConstructor;

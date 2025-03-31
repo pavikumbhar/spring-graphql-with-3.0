@@ -1,0 +1,10 @@
+query operatingSystemsWithCursor($limit:Int,$nextCursor:String){
+    operatingSystemsWithCursor(limit: $limit, cursor: $nextCursor) {
+        items {
+            id
+            name
+        }
+        nextCursor
+        totalElements
+    }
+}
